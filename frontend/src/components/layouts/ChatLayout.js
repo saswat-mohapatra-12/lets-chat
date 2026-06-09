@@ -45,7 +45,7 @@ export default function ChatLayout() {
   useEffect(() => {
     const fetchData = async () => {
       const res = await getChatRooms(currentUser.uid);
-      setChatRooms(res);
+      setChatRooms(res || []);
     };
 
     fetchData();
@@ -54,7 +54,7 @@ export default function ChatLayout() {
   useEffect(() => {
     const fetchData = async () => {
       const res = await getAllUsers();
-      SetUsers(res);
+      SetUsers(res || []);
     };
 
     fetchData();

@@ -1,13 +1,19 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import path from "path";
+import dns from "node:dns";
 
-dotenv.config();
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
+dotenv.config({ path: path.resolve(import.meta.dirname, "../.env") });
 
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+}).catch((error) => {
+  console.error("Mongo initial connection failed:", error.message);
 });
 
 mongoose.connection.on("connected", () => {
