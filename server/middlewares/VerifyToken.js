@@ -2,11 +2,14 @@ import auth from "../config/firebase-config.js";
 
 export const VerifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
   try {
     const decodeValue = await auth.verifyIdToken(token);
@@ -20,7 +23,10 @@ export const VerifyToken = async (req, res, next) => {
 };
 
 export const VerifySocketToken = async (socket, next) => {
-  const token = socket.handshake.auth.token;
+  const token = socket.handshake.auth?.token;
+  if (!token) {
+    return next(new Error("Unauthorized: Token missing"));
+  }
 
   try {
     const decodeValue = await auth.verifyIdToken(token);

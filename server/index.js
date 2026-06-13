@@ -10,13 +10,28 @@ import chatRoomRoutes from "./routes/chatRoom.js";
 import chatMessageRoutes from "./routes/chatMessage.js";
 import userRoutes from "./routes/user.js";
 
-const app = express();
-
 dotenv.config();
 
-app.use(cors());
+const app = express();
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://lets-chat-topaz.vercel.app",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 app.use(VerifyToken);
 
@@ -32,7 +47,7 @@ const server = app.listen(PORT, () => {
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true,
   },
 });
